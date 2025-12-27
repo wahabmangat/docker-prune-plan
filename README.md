@@ -1,4 +1,5 @@
 # docker-prune-plan
+**See exactly what `docker system prune` is about to wipe before you hit the big red button and regret it.**
 
 Dry-run view of what `docker system prune` would delete (containers, images, build cache, unused networks; volumes when requested with `--volumes`). Implemented as a Python CLI.
 
