@@ -1,0 +1,2 @@
+[console_scripts]
+docker-prune-plan = docker_prune_plan.cli:main

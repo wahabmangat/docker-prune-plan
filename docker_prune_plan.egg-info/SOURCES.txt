@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+docker_prune_plan/__init__.py
+docker_prune_plan/cli.py
+docker_prune_plan.egg-info/PKG-INFO
+docker_prune_plan.egg-info/SOURCES.txt
+docker_prune_plan.egg-info/dependency_links.txt
+docker_prune_plan.egg-info/entry_points.txt
+docker_prune_plan.egg-info/requires.txt
+docker_prune_plan.egg-info/top_level.txt

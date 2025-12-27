@@ -1,0 +1,17 @@
+[project]
+name = "docker-prune-plan"
+version = "0.1.0"
+description = "Dry-run view of what docker system prune would delete"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = ["docker>=7.0.0"]
+
+[project.scripts]
+docker-prune-plan = "docker_prune_plan.cli:main"
+
+[build-system]
+requires = ["setuptools>=67", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
