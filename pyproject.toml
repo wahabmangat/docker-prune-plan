@@ -1,6 +1,6 @@
 [project]
 name = "docker-prune-plan"
-version = "0.1.0"
+version = "0.1.1"
 description = "Dry-run view of what docker system prune would delete"
 readme = "README.md"
 requires-python = ">=3.8"

@@ -232,11 +232,30 @@ def build_plan(
     return plan, total_size
 
 
-def docker_df_reclaimable_bytes() -> int | None:
+def docker_df_reclaimable_bytes(
+    prune_type: str, include_volumes: bool
+) -> int | None:
     """
     Use `docker system df --format '{{json .}}'` to get reclaimable bytes as reported by Docker,
-    which accounts for shared layers. Returns None if the command is unavailable or fails.
+    filtered to the selected prune type. Returns None if the command is unavailable or fails.
     """
+    allowed_types: Set[str]
+    if prune_type == "system":
+        allowed_types = {"Images", "Containers", "Build Cache"}
+        if include_volumes:
+            allowed_types.add("Local Volumes")
+    elif prune_type == "image":
+        allowed_types = {"Images"}
+    elif prune_type == "container":
+        allowed_types = {"Containers"}
+    elif prune_type == "volume":
+        allowed_types = {"Local Volumes"}
+    elif prune_type == "build-cache":
+        allowed_types = {"Build Cache"}
+    elif prune_type == "network":
+        allowed_types = set()
+    else:
+        allowed_types = {"Images", "Containers", "Build Cache"}
     try:
         result = subprocess.run(
             ["docker", "system", "df", "--format", "{{json .}}"],
@@ -255,6 +274,8 @@ def docker_df_reclaimable_bytes() -> int | None:
         try:
             entry = json.loads(line)
         except json.JSONDecodeError:
+            continue
+        if entry.get("Type") not in allowed_types:
             continue
         reclaimable_field = entry.get("Reclaimable")
         if not reclaimable_field:
@@ -343,7 +364,9 @@ def main(argv: Sequence[str] | None = None) -> None:
         return
 
     print(render_table(plan))
-    docker_reclaimable = docker_df_reclaimable_bytes()
+    docker_reclaimable = docker_df_reclaimable_bytes(
+        args.type, args.include_volumes
+    )
     total_bytes = docker_reclaimable if docker_reclaimable is not None else total_size
     label = (
         "Reclaimable Space (docker system df)"
