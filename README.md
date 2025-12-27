@@ -4,9 +4,10 @@
 Dry-run view of what `docker system prune` would delete (containers, images, build cache, unused networks; volumes when requested with `--volumes`). Implemented as a Python CLI.
 
 ## Install
-
-- With `pipx` (recommended): run `pipx install .` from this repo.
-- With `pip`: run `pip install .`
+Install the latest release directly:
+```bash
+pip install https://github.com/wahabmangat/docker-prune-plan/releases/download/v0.1.1/docker_prune_plan-0.1.1-py3-none-any.whl
+```
 
 After installation the command `docker-prune-plan` will be available on your PATH.
 
