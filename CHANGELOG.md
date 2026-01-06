@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 - 2026-01-06
+- Switched CLI to subcommands to include all Docker prune commands: `system`, `image`, `container`, `volume`, `network`.
+- Updated `--all/-a` behavior to align with Docker (`system`/`image` affects images; `volume -a` includes named volumes).
+- Removed `docker system df` based totals; tool now reports an estimate based on items listed.
+
 ## 0.1.3 - 2026-01-05
 - Updated README with PyPI/license badges and promoted `pip install docker-prune-plan` as the recommended install path.
 

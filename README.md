@@ -3,9 +3,9 @@
 [![PyPI version](https://badge.fury.io/py/docker-prune-plan.svg)](https://badge.fury.io/py/docker-prune-plan)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**See exactly what `docker system prune` is about to wipe before you hit the big red button and regret it.**
+**See exactly what Docker’s prune commands are about to wipe before you hit the big red button and regret it.**
 
-Dry-run view of what `docker system prune` would delete (containers, images, build cache, unused networks; volumes when requested with `--volumes`). Implemented as a Python CLI.
+Dry-run view of what Docker prune commands would delete (`system`, `image`, `container`, `volume`, `network`). Implemented as a Python CLI.
 
 ## Install
 
@@ -26,20 +26,38 @@ After installation the command `docker-prune-plan` will be available on your PAT
 ## Usage
 
 ```bash
-# Default: system view (containers, images, build cache, networks)
-docker-prune-plan
+# Preview docker system prune
+docker-prune-plan system
 
-# See unused images too (even named ones)
-docker-prune-plan --all
+# Preview docker system prune -a (unused images, not just dangling)
+docker-prune-plan system --all/-a
 
-# Include volumes (matches docker system prune --volumes)
-docker-prune-plan --volumes
+# Preview docker system prune --volumes (unused anonymous volumes)
+docker-prune-plan system --volumes
 
-# Limit to a specific object type
-docker-prune-plan --type volume   # or image|container|network|build-cache
+# Preview docker image prune (dangling images)
+docker-prune-plan image
+
+# Preview docker image prune -a (all unused images)
+docker-prune-plan image --all/-a
+
+# Preview docker volume prune (unused anonymous volumes)
+docker-prune-plan volume
+
+# Preview docker volume prune -a (all unused volumes)
+docker-prune-plan volume --all/-a
+
+# Preview docker container prune (stopped containers)
+docker-prune-plan container
+
+# Preview docker network prune (unused custom networks)
+docker-prune-plan network
 
 # JSON output
-docker-prune-plan --json
-```
+docker-prune-plan system --json
 
-Requires Docker to be installed and the daemon running. Totals use `docker system df`, so shared layers are not double-counted.
+```
+## Notes
+- --all is supported for system and image (affects images only), and for volume (includes named volumes).
+- Label/Filter support is not implemented yet.
+- The tool prints a **Plan Reclaimable Space** total based on the listed items. Differences from other Docker disk usage reports can occur due to shared image layers and build cache internals.
