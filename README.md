@@ -1,4 +1,4 @@
-# docker-prune-plan
+# [docker-prune-plan](https://pypi.org/project/docker-prune-plan/)
 
 [![PyPI version](https://badge.fury.io/py/docker-prune-plan.svg)](https://badge.fury.io/py/docker-prune-plan)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -7,10 +7,18 @@
 
 Best-effort preview of what Docker prune commands would delete (`system`, `image`, `container`, `volume`, `network`). Implemented as a Python CLI.
 
+
+### Run without installing (using [uv](https://docs.astral.sh/uv/reference/cli/#uv-tool:~:text=%2D%2Dfrom.-,uvx,-can%20be%20used)) - Recommended
+If you use [uv](https://docs.astral.sh/uv/reference/cli/#uv-tool:~:text=%2D%2Dfrom.-,uvx,-can%20be%20used), you can run the tool without installing it globally:
+
+```bash
+# example: preview docker system prune
+uvx docker-prune-plan system
+```
 ## Install
 
-### Option 1: PyPI (Recommended)
-The easiest way to install the latest stable version:
+### Option 1: PyPI
+Use `pip` or `pipx` to install the latest stable version:
 
 ```bash
 pip install docker-prune-plan
