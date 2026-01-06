@@ -3,9 +3,9 @@
 [![PyPI version](https://badge.fury.io/py/docker-prune-plan.svg)](https://badge.fury.io/py/docker-prune-plan)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**See exactly what Docker’s prune commands are about to wipe before you hit the big red button and regret it.**
+**See what Docker’s prune commands are about to wipe before you hit the big red button and regret it.**
 
-Dry-run view of what Docker prune commands would delete (`system`, `image`, `container`, `volume`, `network`). Implemented as a Python CLI.
+Best-effort preview of what Docker prune commands would delete (`system`, `image`, `container`, `volume`, `network`). Implemented as a Python CLI.
 
 ## Install
 
@@ -18,7 +18,7 @@ pip install docker-prune-plan
 ### Option 2: Github releases
 Install the latest release directly:
 ```bash
-pip install https://github.com/wahabmangat/docker-prune-plan/releases/download/v0.1.3/docker_prune_plan-0.1.3-py3-none-any.whl
+pip install https://github.com/wahabmangat/docker-prune-plan/releases/download/v0.2.1/docker_prune_plan-0.2.1-py3-none-any.whl
 ```
 
 After installation the command `docker-prune-plan` will be available on your PATH.
@@ -61,3 +61,4 @@ docker-prune-plan system --json
 - --all is supported for system and image (affects images only), and for volume (includes named volumes).
 - Label/Filter support is not implemented yet.
 - The tool prints a **Plan Reclaimable Space** total based on the listed items. Differences from other Docker disk usage reports can occur due to shared image layers and build cache internals.
+- The output is a best-effort preview based on the current Docker state (useful as a safety checklist before pruning). Actual prune results may differ due to Docker’s prune order and state changes.
