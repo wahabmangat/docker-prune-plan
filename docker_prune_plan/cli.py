@@ -345,27 +345,99 @@ def build_plan_system(
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(prog="docker-prune-plan")
+    parser = argparse.ArgumentParser(
+        prog="docker-prune-plan",
+        description=(
+            "Preview what docker prune commands would remove, grouped by resource type "
+            "and reclaimable space."
+        ),
+    )
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    p_image = sub.add_parser("image")
-    p_image.add_argument("-a", "--all", action="store_true")
-    p_image.add_argument("--json", action="store_true")
+    p_image = sub.add_parser(
+        "image",
+        help="List images that would be pruned",
+        description="Show dangling or unused images and their reclaimable space.",
+    )
+    p_image.add_argument(
+        "-a",
+        "--all",
+        action="store_true",
+        help="Include unused images referenced by no containers (not just dangling images).",
+    )
+    p_image.add_argument(
+        "--json",
+        action="store_true",
+        help="Output the plan as JSON instead of a table.",
+    )
 
-    p_volume = sub.add_parser("volume")
-    p_volume.add_argument("-a", "--all", action="store_true")
-    p_volume.add_argument("--json", action="store_true")
+    p_volume = sub.add_parser(
+        "volume",
+        help="List volumes that would be pruned",
+        description="Show unused volumes and their reclaimable space.",
+    )
+    p_volume.add_argument(
+        "-a",
+        "--all",
+        action="store_true",
+        help="Include named volumes; by default only anonymous volumes are included.",
+    )
+    p_volume.add_argument(
+        "--json",
+        action="store_true",
+        help="Output the plan as JSON instead of a table.",
+    )
 
-    p_container = sub.add_parser("container")
-    p_container.add_argument("--json", action="store_true")
+    p_container = sub.add_parser(
+        "container",
+        help="List stopped containers that would be pruned",
+        description="Show stopped containers eligible for pruning and their reclaimable space.",
+    )
+    p_container.add_argument(
+        "--json",
+        action="store_true",
+        help="Output the plan as JSON instead of a table.",
+    )
 
-    p_network = sub.add_parser("network")
-    p_network.add_argument("--json", action="store_true")
+    p_network = sub.add_parser(
+        "network",
+        help="List unused networks that would be pruned",
+        description="Show user-defined networks with no attached containers.",
+    )
+    p_network.add_argument(
+        "--json",
+        action="store_true",
+        help="Output the plan as JSON instead of a table.",
+    )
 
+    p_system = sub.add_parser(
+        "system",
+        help="List everything that would be pruned",
+        description=(
+            "Show containers, networks, images, optional volumes, and build cache "
+            "that would be removed by docker system prune."
+        ),
+    )
+    p_system.add_argument(
+        "-a",
+        "--all",
+        action="store_true",
+        help="Include unused images referenced by no containers (not just dangling images).",
+    )
+    p_system.add_argument(
+        "--volumes",
+        action="store_true",
+        help="Include unused volumes in the plan (matches docker system prune --volumes).",
+    )
     p_system.add_argument(
         "--name",
         action="store_true",
         help="Show the NAME column in the system plan output table.",
+    )
+    p_system.add_argument(
+        "--json",
+        action="store_true",
+        help="Output the plan as JSON instead of the table default.",
     )
 
     return parser.parse_args(argv)
