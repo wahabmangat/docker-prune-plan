@@ -67,12 +67,21 @@ def parse_human_size_to_bytes(text: str) -> int | None:
     return int(value * multipliers.get(unit, 1))
 
 
-def render_table(items: Sequence[PruneItem]) -> str:
-    headers = ["TYPE", "ID", "NAME", "SIZE", "INFO"]
+def render_table(
+    items: Sequence[PruneItem], exclude_columns: Set[str] | None = None
+) -> str:
+    if exclude_columns is None:
+        exclude_columns = set()
+    all_headers = ["TYPE", "ID", "NAME", "SIZE", "INFO"]
+    headers = [h for h in all_headers if h not in exclude_columns]
+    column_indices = [i for i, h in enumerate(all_headers) if h not in exclude_columns]
+
     rows: List[List[str]] = [
         [item.item_type, item.item_id, item.name, item.human_size, item.description]
         for item in items
     ]
+    rows = [[row[i] for i in column_indices] for row in rows]
+
     widths = [len(h) for h in headers]
     for row in rows:
         for idx, cell in enumerate(row):
@@ -101,10 +110,12 @@ def collect_used_volumes(containers: Sequence[Dict[str, object]]) -> Set[str]:
                 used.add(str(mount["Name"]))
     return used
 
+
 def normalize_image_id(v: str) -> str:
     if not v:
         return ""
     return v if v.startswith("sha256:") else f"sha256:{v}"
+
 
 def collect_used_images(containers: Sequence[Dict[str, object]]) -> Set[str]:
     used: Set[str] = set()
@@ -126,6 +137,7 @@ def is_probably_anonymous_volume(name: str) -> bool:
     if not name:
         return False
     return re.fullmatch(r"[0-9a-f]{32,64}", name) is not None
+
 
 def build_plan_container(client: docker.APIClient) -> Tuple[List[PruneItem], int]:
     plan: List[PruneItem] = []
@@ -152,7 +164,9 @@ def build_plan_container(client: docker.APIClient) -> Tuple[List[PruneItem], int
     return plan, total
 
 
-def build_plan_image(client: docker.APIClient, include_all: bool) -> Tuple[List[PruneItem], int]:
+def build_plan_image(
+    client: docker.APIClient, include_all: bool
+) -> Tuple[List[PruneItem], int]:
     plan: List[PruneItem] = []
     total = 0
     all_containers = client.containers(all=True)
@@ -348,10 +362,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p_network = sub.add_parser("network")
     p_network.add_argument("--json", action="store_true")
 
-    p_system = sub.add_parser("system")
-    p_system.add_argument("-a", "--all", action="store_true")
-    p_system.add_argument("--volumes", action="store_true")
-    p_system.add_argument("--json", action="store_true")
+    p_system.add_argument(
+        "--name",
+        action="store_true",
+        help="Show the NAME column in the system plan output table.",
+    )
 
     return parser.parse_args(argv)
 
@@ -405,7 +420,11 @@ def main(argv: Sequence[str] | None = None) -> None:
         print(json.dumps(out, indent=2))
         return
 
-    print(render_table(plan))
+    exclude_columns: Set[str] = set()
+    if args.cmd == "system" and not args.name:
+        exclude_columns.add("NAME")
+
+    print(render_table(plan, exclude_columns=exclude_columns))
     print(f"\nPlan Reclaimable Space: {human_size(plan_total)}")
 
 
